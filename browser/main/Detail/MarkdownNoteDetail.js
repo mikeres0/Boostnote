@@ -11,8 +11,10 @@ import ee from 'browser/main/lib/eventEmitter'
 import markdown from 'browser/lib/markdown'
 import StatusBar from '../StatusBar'
 import _ from 'lodash'
+import MarkdownPDF from 'markdown-pdf'
 
 const electron = require('electron')
+const fs = require('fs')
 const { remote } = electron
 const { Menu, MenuItem, dialog } = remote
 
@@ -162,15 +164,23 @@ class MarkdownNoteDetail extends React.Component {
     })
   }
 
-  exportAsFile () {
+  exportAsFile (e) {
+    console.log("attempting bleh")
+    
+    let { note } = this.state
 
+    var md = note.content;
+
+    markdownpdf().from.string(md).to("/document.pdf", function () {
+      console.log("Done")
+    })
   }
 
   handleShareButtonClick (e) {
     let menu = new Menu()
     menu.append(new MenuItem({
       label: 'Export as a File',
-      click: (e) => this.handlePreferencesButtonClick(e)
+      click: (e) => this.exportAsFile(e)
     }))
     menu.append(new MenuItem({
       label: 'Export to Web',
@@ -253,7 +263,6 @@ class MarkdownNoteDetail extends React.Component {
             />
             <button styleName='info-right-button'
               onClick={(e) => this.handleShareButtonClick(e)}
-              disabled
             >
               <i className='fa fa-share-alt fa-fw' />
               <span styleName='info-right-button-tooltip'
